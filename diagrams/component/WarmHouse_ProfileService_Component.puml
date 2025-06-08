@@ -1,0 +1,30 @@
+@startuml
+
+!include .\C4_Component.puml
+
+AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
+
+title Component Diagram for profiles Service
+
+Container(api_gateway, "Api Gateway","", "Балансировщик, отвечающий за аутентификацию и маршрутизацию")
+
+Container_Boundary(b1, "Profiles Service") {
+  Component(profiles_api, "Profiles API", "", "Обрабатывает HTTP-запросы")
+  Component(profiles_service, "Profiles Service", "", "Логика работы с пользователями")
+  Component(profiles_repository, "Profiles Repository", "Слой взаимодействия с БД")
+  Component(devices_repository, "Devices Repository", "Слой взаимодействия с Kafka")
+}
+ContainerQueue(kafka, "kafka", "kafka")
+ContainerDb(profiles_db, "Profiles DB", "PostgreSQL", "", $tags = "storage")
+
+Rel(api_gateway, profiles_api, "HTTP-запросы")
+
+Rel(profiles_api, profiles_service, "Создание/обновление пользователей",)
+
+Rel(profiles_service, profiles_repository,)
+Rel(profiles_service, devices_repository,)
+
+Rel(profiles_repository, profiles_db,)
+Rel(devices_repository, "kafka", "Запросы и команды")
+
+@enduml

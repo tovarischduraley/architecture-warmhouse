@@ -1,0 +1,54 @@
+@startuml
+
+!include .\C4_Component.puml
+
+AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
+
+title Component Diagram for DeviceManagement Service
+
+ContainerQueue(kafka1, "Kafka",  "Топики: device-commands, device-queries")
+Container(api_gateway, "Api Gateway","", "Балансировщик, отвечающий за аутентификацию и маршрутизацию")
+
+Container_Boundary(b1, "DeviceManagement Service") {
+  Component(device_api, "DeviceManagement API", "", "Обрабатывает HTTP-запросы")
+  Component(kafka_consumer, "Kafka Consumer", "", )
+  Component(query_handler, "QueryHandler", "", )
+  Component(command_handler, "CommandHandler", "", )
+  Component(business_logic, "Business Logic", "Бизнес-логика")
+  Component(device_repository, "Device Repository", "Слой взаимодействия с БД")
+  Component(video_repository, "Video Repository", "Слой взаимодействия с S3")
+  Component(command_processor, "Command Processor", "Отправка команд устройствам")
+  Component(event_publisher, "Event Publisher", "Публикует события в Kafka\n(DeviceCreated, DeviceUpdated, DeviceDeleted)")
+  Component(kafka_producer, "Kafka Producer", "Отправка событий в Kafka")
+}
+
+ContainerDb(devices_db, "Devices DB", "PostgreSQL", "", $tags = "storage")
+ContainerDb(video_db, "Video DB", "Amazon S3", "", $tags = "storage")
+ContainerQueue(kafka2, "Kafka", "Топик: device-events")
+ContainerQueue(mqtt_broker, "MQTT Broker", "Топики: commands/, responses/")
+
+Rel(api_gateway, device_api, "HTTP-запросы")
+
+Rel(device_api, query_handler,)
+Rel(device_api, command_handler,)
+
+Rel(business_logic, command_processor,)
+Rel(command_processor, mqtt_broker, )
+
+Rel(business_logic, event_publisher,)
+Rel(query_handler, device_repository, "read")
+Rel(query_handler, video_repository, "read")
+Rel(business_logic, video_repository,)
+Rel(command_handler, business_logic, )
+Rel(event_publisher, kafka_producer, )
+Rel(kafka_producer, kafka2, )
+Rel(kafka1, kafka_consumer, "Получение команд и запросов из Kafka")
+Rel(kafka_consumer, command_handler, )
+Rel(kafka_consumer, query_handler, )
+
+Rel(business_logic, device_repository,)
+Rel(device_repository, devices_db, )
+Rel(video_repository, video_db,)
+
+
+@enduml

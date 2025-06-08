@@ -1,0 +1,15 @@
+@startuml
+title WarmHouse Context Diagram
+
+top to bottom direction
+
+!include ./C4_Context.puml
+
+Person(user, "User", "Пользователь системы 'Теплый дом'")
+System(WarmHouseSystem, "WarmHouse System", "Система управления 'Теплый дом'")
+
+System_Ext(sensor, "Sensor", "API температурных датчиков", "Uses REST API, JSON data format")
+Rel(user, WarmHouseSystem, "Использует с системой")
+Rel(WarmHouseSystem,sensor,"Получение температуры")
+
+@enduml

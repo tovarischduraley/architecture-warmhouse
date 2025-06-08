@@ -1,0 +1,36 @@
+@startuml
+
+title Code Diagram for Profiles Service Component (DeviceManagement Service)
+
+class User {
+    + id: uuid
+    + email: str
+    + fullname: str
+    + password_hash: str
+}
+
+class ProfilesService {
+    - _profiles_repo: ProfilesRepository
+    - _devices_repo: DevicesRepository
+    + {method} create_user(user: User)
+    + {method} add_device(user_id: uuid, device: Device)
+}
+
+class Device {
+  + id: uuid
+  + name: str
+  + description: str
+  + status: str
+  + type: str
+  + manufacturer: str
+  + model: str
+  + serial_number: str
+  + mac_address: str
+  + ip_address: str
+  + house_id
+}
+
+ProfilesService --> Device: "Создает"
+ProfilesService --> User: "Создает"
+
+@enduml

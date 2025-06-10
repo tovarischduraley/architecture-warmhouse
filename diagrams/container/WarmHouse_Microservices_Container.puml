@@ -55,6 +55,7 @@ Rel(telemetry_service, telemetry_db,)
 Rel(device_management_service, kafka, "")
 Rel(automation_service, kafka, "")
 Rel(profile_service, kafka, "")
+Rel(profile_service, device_management_service, "Uses", "JSON/HTTPS")
 
 Rel(mqtt, telemetry_service, "")
 Rel(device_management_service, mqtt, "")
